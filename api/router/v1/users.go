@@ -15,7 +15,7 @@ func UsersRouter(users *gin.RouterGroup, db *gorm.DB) {
 			"message": "pong",
 		})
 	})
-	users.GET("/:id", func(ctx *gin.Context) {})
+	users.GET("/:id", usershandler.FindUser(db))
 	users.POST("/", usershandler.CreateUser(db))
 	users.PUT("/:id", func(ctx *gin.Context) {})
 	users.DELETE("/:id", func(ctx *gin.Context) {})
