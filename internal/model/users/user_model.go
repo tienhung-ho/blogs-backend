@@ -19,7 +19,8 @@ type Users struct {
 	Password  string       `json:"password" gorm:"column:password;"`
 	Full_name string       `json:"full_name" gorm:"column:full_name;"`
 	Birthdate sql.NullTime `json:"birthdate" gorm:"column:birthdate;type:date"`
-	Gender    string       `json:"gender" gorm:"column:gender;"`
+	Gender    *Gender      `json:"gender" gorm:"column:gender;type:enum('Male','Female','Other')"`
+	// Status    string       `json:"status" gorm:"column:status;type:enum('Active','Inactive','Pending')"`
 }
 
 func (Users) TableName() string {

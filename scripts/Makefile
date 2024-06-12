@@ -23,7 +23,6 @@ createmigrate:
 
 migrateup:
 	@echo "Migrating up with database URL: $(SQL_URL)"
-	@echo "MYSQL_ROOT_PASSWORD: $(MYSQL_ROOT_PASSWORD)"
 	@echo "DATABASE_NAME: $(DATABASE_NAME)"
 	migrate -path ../migrations/mysql -database "$(SQL_URL)" -verbose up
 
