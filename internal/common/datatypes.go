@@ -1,4 +1,4 @@
-package usersmodel
+package common
 
 import (
 	"database/sql/driver"
@@ -24,12 +24,29 @@ func (r Gender) Value() (driver.Value, error) {
 	return string(r), nil
 }
 
+type Status string
+
+const (
+	StatusActive   Status = "Active"
+	StatusInactive Status = "Inactive"
+	StatusPending  Status = "Pending"
+)
+
+func (r *Status) Scan(value interface{}) error {
+	*r = Status(value.([]byte))
+	return nil
+}
+
+func (r Status) Value() (driver.Value, error) {
+	return string(r), nil
+}
+
 type JSON json.RawMessage
 
 func (j *JSON) Scan(value interface{}) error {
 	bytes, ok := value.([]byte)
 	if !ok {
-		return errors.New(fmt.Sprint("Failed to unmarshal JSONB value:", value))
+		return errors.New(fmt.Sprint("Failed to unmarshal JSON value:", value))
 	}
 
 	result := json.RawMessage{}
