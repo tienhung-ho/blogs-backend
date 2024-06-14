@@ -6,9 +6,16 @@ import (
 	"context"
 )
 
-func (s *mysqlStorage) CreateUser(ctx context.Context, data *usersmodel.UserCreation) error {
-	if err := s.db.Create(&data).Error; err != nil {
-		return common.ErrDB(err)
+func (s *mysqlStorage) CreateUser(ctx context.Context, data *usersmodel.UserCreation) (int, error) {
+	db := s.db.Begin()
+	if err := db.Create(&data).Error; err != nil {
+		db.Rollback()
+		return 0, common.ErrDB(err)
 	}
-	return nil
+
+	if err := db.Commit().Error; err != nil {
+		db.Rollback()
+		return 0, common.ErrDB(err)
+	}
+	return data.Id, nil
 }

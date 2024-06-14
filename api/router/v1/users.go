@@ -1,6 +1,7 @@
 package router
 
 import (
+	authhandler "blogs/api/handler/auth"
 	usershandler "blogs/api/handler/users"
 	"net/http"
 
@@ -16,7 +17,7 @@ func UsersRouter(users *gin.RouterGroup, db *gorm.DB) {
 		})
 	})
 	users.GET("/:id", usershandler.FindUser(db))
-	users.POST("/", usershandler.CreateUser(db))
+	users.POST("/", authhandler.CreateUser(db))
 	users.PUT("/:id", func(ctx *gin.Context) {})
 	users.DELETE("/:id", func(ctx *gin.Context) {})
 

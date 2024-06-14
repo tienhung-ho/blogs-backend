@@ -1,9 +1,9 @@
-package usershandler
+package authhandler
 
 import (
-	userbiz "blogs/internal/bussiness/user"
+	authbiz "blogs/internal/bussiness/auth"
 	"blogs/internal/common"
-	usersmodel "blogs/internal/model/users"
+	authmodel "blogs/internal/model/auth"
 	userstorage "blogs/internal/repository/mysql/user"
 	"net/http"
 
@@ -13,7 +13,7 @@ import (
 
 func CreateUser(db *gorm.DB) func(*gin.Context) {
 	return func(c *gin.Context) {
-		var data usersmodel.UserCreation
+		var data authmodel.UserRegister
 		if err := c.ShouldBind(&data); err != nil {
 			c.JSON(http.StatusBadRequest, common.ErrInvalidRequest(err))
 			return
@@ -21,13 +21,14 @@ func CreateUser(db *gorm.DB) func(*gin.Context) {
 		}
 
 		store := userstorage.NewSqlStorage(db)
-		biz := userbiz.NewCreateUserBiz(store)
-		if err := biz.CreateUser(c.Request.Context(), &data); err != nil {
+		biz := authbiz.NewCreateUserBiz(store)
+		dataId, err := biz.CreateUser(c.Request.Context(), &data)
+		if err != nil {
 			c.JSON(http.StatusBadRequest, err)
 			return
 		}
 
-		c.JSON(http.StatusOK, common.SimpleSuccesResponse(data.Id))
+		c.JSON(http.StatusOK, common.SimpleSuccesResponse(dataId))
 
 	}
 }

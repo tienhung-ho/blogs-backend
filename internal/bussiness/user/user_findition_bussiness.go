@@ -26,3 +26,12 @@ func (biz *findUserBussiness) GetItemById(ctx context.Context, id int) (*usersmo
 
 	return data, nil
 }
+
+func (biz *findUserBussiness) GetItemByCondition(ctx context.Context, cond map[string]interface{}) (*usersmodel.Users, error) {
+	data, err := biz.db.GetUser(ctx, cond)
+	if err != nil {
+		return nil, common.ErrCannotGetEntity(usersmodel.EntityName, err)
+	}
+
+	return data, nil
+}
