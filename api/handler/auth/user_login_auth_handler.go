@@ -3,6 +3,7 @@ package authhandler
 import (
 	authbiz "blogs/internal/bussiness/auth"
 	"blogs/internal/common"
+	jwtcus "blogs/internal/helpers/token/jwt"
 	authmodel "blogs/internal/model/auth"
 	userstorage "blogs/internal/repository/mysql/user"
 	"net/http"
@@ -20,17 +21,19 @@ func Login(db *gorm.DB) func(*gin.Context) {
 			return
 		}
 
-		store := userstorage.NewSqlStorage(db)
-		biz := authbiz.NewLoginUserBiz(store)
+		jwtService := jwtcus.NewJwtServices("conca", "user")
 
-		_, err := biz.Login(c.Request.Context(), &data)
+		store := userstorage.NewSqlStorage(db)
+		biz := authbiz.NewLoginUserBiz(store, jwtService)
+
+		tokens, err := biz.Login(c.Request.Context(), &data)
 
 		if err != nil {
 			c.JSON(http.StatusBadRequest, err)
 			return
 		}
 
-		c.JSON(http.StatusOK, common.NewReponseUserToken("tokens.AccessToken", "tokens.RefreshToken"))
+		c.JSON(http.StatusOK, common.NewReponseUserToken(tokens.AccessToken, tokens.RefreshToken))
 
 	}
 }

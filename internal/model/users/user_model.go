@@ -15,6 +15,7 @@ var (
 )
 
 type Users struct {
+	ID        int           `json:"id" gorm:"column:id;"`
 	Username  string        `json:"username" gorm:"column:username;"`
 	Email     string        `json:"email" gorm:"column:email;"`
 	Password  string        `json:"-" gorm:"column:password;"`
