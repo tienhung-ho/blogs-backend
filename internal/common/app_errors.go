@@ -81,6 +81,12 @@ func ErrCannotUpdateEntity(entity string, err error) *appError {
 		fmt.Sprintf("ErrCannotUpdate%s", entity), entity)
 }
 
+func ErrEmailOrPasswordInvalid(entity string, err error) *appError {
+	return NewErrorResponse(err,
+		fmt.Sprintf("Cannot login, wrong password or email %s", strings.ToLower(entity)),
+		fmt.Sprintf("ErrCannotLogin%s", entity), entity)
+}
+
 func ErrCannotDeleteEntity(entity string, err error) *appError {
 	return NewErrorResponse(err,
 		fmt.Sprintf("Cannot delete %s", strings.ToLower(entity)),

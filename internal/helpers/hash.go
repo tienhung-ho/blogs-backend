@@ -1,23 +1,23 @@
 package helpers
 
 import (
-	"fmt"
 	"os"
 	"strconv"
 
 	"golang.org/x/crypto/bcrypt"
 )
 
-func GeneratePass(pass interface{}) (string, error) {
-	var password string
-	switch v := pass.(type) {
-	case string:
-		password = v
-	case []byte:
-		password = string(v)
-	default:
-		return "", fmt.Errorf("unsupported data type: %T", v)
+type hashBcrypt struct {
+	password string
+}
+
+func NewHashBcrypt(password string) *hashBcrypt {
+	return &hashBcrypt{
+		password: password,
 	}
+}
+
+func (h hashBcrypt) GeneratePass() (string, error) {
 	cost := os.Getenv("COST")
 	costInt, err := strconv.Atoi(cost)
 
@@ -25,7 +25,7 @@ func GeneratePass(pass interface{}) (string, error) {
 		return "", err
 	}
 
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), costInt)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(h.password), costInt)
 
 	if err != nil {
 		return "", err
@@ -34,7 +34,7 @@ func GeneratePass(pass interface{}) (string, error) {
 	return string(hashedPassword), nil
 }
 
-func ComparePass(hashedPassword, password string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
+func (h hashBcrypt) ComparePass(hashedPassword string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(h.password))
 	return err == nil
 }

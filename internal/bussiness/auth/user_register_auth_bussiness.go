@@ -35,7 +35,9 @@ func (biz *createUserBussiness) CreateUser(ctx context.Context, data *authmodel.
 		return 0, usersmodel.ErrUserNameBlank
 	}
 
-	hashedPassword, err := helpers.GeneratePass(data.Password)
+	hasher := helpers.NewHashBcrypt(data.Password)
+
+	hashedPassword, err := hasher.GeneratePass()
 
 	if err != nil {
 		return 0, err

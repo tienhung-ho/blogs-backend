@@ -18,7 +18,7 @@ func UsersRouter(users *gin.RouterGroup, db *gorm.DB) {
 	})
 	users.GET("/:id", usershandler.FindUser(db))
 	users.POST("/", authhandler.CreateUser(db))
-	users.PUT("/:id", func(ctx *gin.Context) {})
+	users.POST("/login", authhandler.Login(db))
 	users.DELETE("/:id", func(ctx *gin.Context) {})
 
 }
