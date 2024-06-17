@@ -4,8 +4,6 @@ import (
 	authbiz "blogs/internal/bussiness/auth"
 	"blogs/internal/common"
 	jwtcus "blogs/internal/helpers/token/jwt"
-	authmodel "blogs/internal/model/auth"
-	usersmodel "blogs/internal/model/users"
 	userstorage "blogs/internal/repository/mysql/user"
 	"net/http"
 	"os"
@@ -14,31 +12,26 @@ import (
 	"gorm.io/gorm"
 )
 
-func Login(db *gorm.DB) func(*gin.Context) {
+func RefreshToken(db *gorm.DB) func(*gin.Context) {
 	return func(c *gin.Context) {
-		var data authmodel.UserLogin
-
-		if err := c.ShouldBind(&data); err != nil {
-			c.JSON(http.StatusBadRequest, common.ErrInvalidRequest(err))
+		userId, ok := c.Get("userID")
+		if !ok {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "userId not found in context"})
 			return
 		}
 
+		userIdInt, ok := userId.(int)
+		if !ok {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "userId is not of type int"})
+			return
+		}
 		secretKey := os.Getenv("SECRET_KEY")
 
 		jwtService := jwtcus.NewJwtServices(secretKey, "user")
-
 		store := userstorage.NewSqlStorage(db)
-		biz := authbiz.NewLoginUserBiz(store, jwtService)
+		biz := authbiz.NewTokenBiz(store, jwtService)
 
-		simpleUser, err := biz.Login(c.Request.Context(), &data)
-
-		if err != nil {
-			c.JSON(http.StatusBadRequest, common.ErrEmailOrPasswordInvalid(usersmodel.EntityName, err))
-			return
-		}
-
-		tokeBiz := authbiz.NewTokenBiz(store, jwtService)
-		userTokens, err := tokeBiz.GenerateToken(c.Request.Context(), simpleUser.ID)
+		userTokens, err := biz.GenerateToken(c.Request.Context(), userIdInt)
 
 		if err != nil {
 			c.JSON(http.StatusBadRequest, err)

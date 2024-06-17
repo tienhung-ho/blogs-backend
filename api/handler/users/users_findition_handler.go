@@ -17,6 +17,7 @@ func FindUser(db *gorm.DB) func(*gin.Context) {
 
 		if err != nil {
 			c.JSON(http.StatusBadRequest, common.ErrInvalidRequest(err))
+			return
 		}
 
 		store := userstorage.NewSqlStorage(db)
