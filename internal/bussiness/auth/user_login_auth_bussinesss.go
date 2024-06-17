@@ -40,16 +40,16 @@ func (biz *loginUserBussiness) Login(ctx context.Context, loginUser *authmodel.U
 		return nil, common.ErrEmailOrPasswordInvalid(usersmodel.EntityName, errors.New("could not login"))
 	}
 
-	accessToken, err := biz.jwtService.GenerateToken(*user, time.Hour)
+	accessToken, err := biz.jwtService.GenerateToken(*user, time.Second*40)
 
 	if err != nil {
-		return nil, common.ErrInternal(err)
+		return nil, common.TokenExpired(usersmodel.EntityName, err)
 	}
 
 	refreshToken, err := biz.jwtService.GenerateToken(*user, 250*24*time.Hour)
 
 	if err != nil {
-		return nil, common.ErrInternal(err)
+		return nil, common.TokenExpired(usersmodel.EntityName, err)
 	}
 
 	account := authmodel.NewUserToken(accessToken, refreshToken)

@@ -28,3 +28,19 @@ type Users struct {
 func (Users) TableName() string {
 	return "users"
 }
+
+type SimpleUser struct {
+	ID        int    `json:"id" gorm:"column:id;"`
+	Username  string `json:"username" gorm:"column:username;"`
+	Email     string `json:"email" gorm:"column:email;"`
+	Full_name string `json:"full_name" gorm:"column:full_name;"`
+}
+
+func (u *Users) ToSimpleUser() *SimpleUser {
+	return &SimpleUser{
+		ID:        u.ID,
+		Username:  u.Username,
+		Email:     u.Email,
+		Full_name: u.Full_name,
+	}
+}

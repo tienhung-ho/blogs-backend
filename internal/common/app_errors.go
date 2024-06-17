@@ -57,6 +57,12 @@ func ErrInternal(err error) *appError {
 	return NewFullErrorResponse(http.StatusInternalServerError, err, "something went wrong with the server", err.Error(), "ErrInternal")
 }
 
+func TokenExpired(entity string, err error) *appError {
+	return NewErrorResponse(err,
+		fmt.Sprintf("%s token expired", strings.ToLower(entity)),
+		fmt.Sprintf("ErrTokenExpired%s", entity), entity)
+}
+
 func ErrCannotListEntity(entity string, err error) *appError {
 	return NewErrorResponse(err,
 		fmt.Sprintf("Cannot list %s", strings.ToLower(entity)),

@@ -25,3 +25,15 @@ func NewReponseUserToken(accessToken, refreshToken string) *userResponesToken {
 		RefreshToken: refreshToken,
 	}
 }
+
+type errTokenRespone struct {
+	Error interface{} `json:"error"`
+	Type  interface{} `json:"type"`
+}
+
+func NewReponseErrToken(errToken, tokenType string) *errTokenRespone {
+	return &errTokenRespone{
+		Error: errToken,
+		Type:  tokenType,
+	}
+}

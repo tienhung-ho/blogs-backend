@@ -7,6 +7,7 @@ import (
 	authmodel "blogs/internal/model/auth"
 	userstorage "blogs/internal/repository/mysql/user"
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -21,19 +22,23 @@ func Login(db *gorm.DB) func(*gin.Context) {
 			return
 		}
 
-		jwtService := jwtcus.NewJwtServices("conca", "user")
+		secretKey := os.Getenv("SECRET_KEY")
+
+		jwtService := jwtcus.NewJwtServices(secretKey, "user")
 
 		store := userstorage.NewSqlStorage(db)
 		biz := authbiz.NewLoginUserBiz(store, jwtService)
 
-		tokens, err := biz.Login(c.Request.Context(), &data)
+		userTokens, err := biz.Login(c.Request.Context(), &data)
 
 		if err != nil {
 			c.JSON(http.StatusBadRequest, err)
 			return
 		}
+		c.SetCookie("access_token", userTokens.AccessToken, 3600, "/", "localhost", false, true)
+		c.SetCookie("refresh_token", userTokens.RefreshToken, 3600*24*250, "/", "localhost", false, true)
 
-		c.JSON(http.StatusOK, common.NewReponseUserToken(tokens.AccessToken, tokens.RefreshToken))
+		c.JSON(http.StatusOK, common.NewReponseUserToken(userTokens.AccessToken, userTokens.RefreshToken))
 
 	}
 }
