@@ -8,6 +8,8 @@ import (
 	usersmodel "blogs/internal/model/users"
 	"context"
 	"errors"
+	"log"
+	"time"
 )
 
 type UserLoginStorage interface {
@@ -27,6 +29,7 @@ func NewLoginUserBiz(user UserLoginStorage, jwtService *jwtcus.JwtServices) *log
 }
 
 func (biz *loginUserBussiness) Login(ctx context.Context, loginUser *authmodel.UserLogin) (*usersmodel.SimpleUser, error) {
+	start := time.Now()
 	user, err := biz.store.GetUser(ctx, map[string]interface{}{"email": loginUser.Email})
 
 	if err != nil {
@@ -40,6 +43,8 @@ func (biz *loginUserBussiness) Login(ctx context.Context, loginUser *authmodel.U
 	}
 
 	simpleUser := user.ToSimpleUser()
+
+	log.Printf("User business took %v", time.Since(start))
 
 	return simpleUser, nil
 }
