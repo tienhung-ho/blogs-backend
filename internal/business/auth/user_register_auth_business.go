@@ -13,15 +13,15 @@ type CreateUserStorage interface {
 	CreateUser(ctx context.Context, data *usersmodel.UserCreation) (int, error)
 }
 
-type createUserBussiness struct {
+type createUserBusiness struct {
 	store CreateUserStorage
 }
 
-func NewCreateUserBiz(store CreateUserStorage) *createUserBussiness {
-	return &createUserBussiness{store: store}
+func NewCreateUserBiz(store CreateUserStorage) *createUserBusiness {
+	return &createUserBusiness{store: store}
 }
 
-func (biz *createUserBussiness) CreateUser(ctx context.Context, data *authmodel.UserRegister) (int, error) {
+func (biz *createUserBusiness) CreateUser(ctx context.Context, data *authmodel.UserRegister) (int, error) {
 	user, err := biz.store.GetUser(ctx, map[string]interface{}{"email": data.Email})
 
 	if user != nil {

@@ -1,7 +1,7 @@
 package usershandler
 
 import (
-	userbiz "blogs/internal/bussiness/user"
+	userbiz "blogs/internal/business/user"
 	"blogs/internal/common"
 	userstorage "blogs/internal/repository/mysql/user"
 	"net/http"

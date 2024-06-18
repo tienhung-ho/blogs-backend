@@ -16,19 +16,19 @@ type UserLoginStorage interface {
 	GetUser(ctx context.Context, cond map[string]interface{}) (*usersmodel.Users, error)
 }
 
-type loginUserBussiness struct {
+type loginUserBusiness struct {
 	store      UserLoginStorage
 	jwtService *jwtcus.JwtServices
 }
 
-func NewLoginUserBiz(user UserLoginStorage, jwtService *jwtcus.JwtServices) *loginUserBussiness {
-	return &loginUserBussiness{
+func NewLoginUserBiz(user UserLoginStorage, jwtService *jwtcus.JwtServices) *loginUserBusiness {
+	return &loginUserBusiness{
 		store:      user,
 		jwtService: jwtService,
 	}
 }
 
-func (biz *loginUserBussiness) Login(ctx context.Context, loginUser *authmodel.UserLogin) (*usersmodel.SimpleUser, error) {
+func (biz *loginUserBusiness) Login(ctx context.Context, loginUser *authmodel.UserLogin) (*usersmodel.SimpleUser, error) {
 	start := time.Now()
 	user, err := biz.store.GetUser(ctx, map[string]interface{}{"email": loginUser.Email})
 

@@ -1,7 +1,7 @@
 package authhandler
 
 import (
-	authbiz "blogs/internal/bussiness/auth"
+	authbiz "blogs/internal/business/auth"
 	"blogs/internal/common"
 	authmodel "blogs/internal/model/auth"
 	userstorage "blogs/internal/repository/mysql/user"
