@@ -14,6 +14,7 @@ type UserCreation struct {
 	Birthdate time.Time     `json:"birthdate" gorm:"column:birthdate;"`
 	Gender    common.Gender `json:"gender" gorm:"column:gender;"`
 	Status    common.Status `json:"status" gorm:"column:status;default:'Pending'"`
+	Deleted   bool          `json:"deleted" gorm:"column:deleted;default:false"`
 }
 
 func (UserCreation) TableName() string {

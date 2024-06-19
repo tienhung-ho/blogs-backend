@@ -23,6 +23,7 @@ type Users struct {
 	Birthdate sql.NullTime  `json:"birthdate" gorm:"column:birthdate;type:date"`
 	Gender    common.Gender `json:"gender" gorm:"column:gender;type:enum('Male','Female','Other')"`
 	Status    common.Status `json:"status" gorm:"column:status;type:enum('Active','Inactive','Pending')"`
+	Deleted   bool          `json:"deleted" gorm:"column:deleted;default:false"`
 }
 
 func (Users) TableName() string {

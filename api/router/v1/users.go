@@ -23,4 +23,5 @@ func UsersRouter(users *gin.RouterGroup, db *gorm.DB) {
 	users.POST("/login", authhandler.Login(db))
 	users.POST("/refreshtoken", authmiddleware.AuthMiddleware(authmiddleware.RefreshToken), authhandler.RefreshToken(db))
 	users.PATCH("/edit", authmiddleware.AuthMiddleware(authmiddleware.AccessToken), usershandler.UpdateUser(db))
+	users.DELETE("/", authmiddleware.AuthMiddleware(authmiddleware.AccessToken), usershandler.DeleteUser(db))
 }

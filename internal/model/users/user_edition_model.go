@@ -13,6 +13,7 @@ type UserEdition struct {
 	Birthdate time.Time     `json:"birthdate" form:"birthdate" gorm:"column:birthdate;"`
 	Gender    common.Gender `json:"gender" form:"gener" gorm:"column:gender;"`
 	Status    common.Status `json:"status" form:"status" gorm:"column:status;default:'Pending'"`
+	Deleted   bool          `json:"deleted" gorm:"column:deleted;default:false"`
 }
 
 func (UserEdition) TableName() string {
