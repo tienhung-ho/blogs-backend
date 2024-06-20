@@ -17,6 +17,10 @@ func NewRouter(db *gorm.DB) *gin.Engine {
 		{
 			UsersRouter(users, db)
 		}
+		blogcategory := v1.Group("/blog-category")
+		{
+			BlogCategoryRouter(blogcategory, db)
+		}
 	}
 
 	return router

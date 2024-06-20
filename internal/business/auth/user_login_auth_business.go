@@ -36,6 +36,10 @@ func (biz *loginUserBusiness) Login(ctx context.Context, loginUser *authmodel.Us
 		return nil, err
 	}
 
+	if user.Deleted {
+		return nil, common.ErrEntityDeleted(usersmodel.EntityName, err)
+	}
+
 	hasher := helpers.NewHashBcrypt(loginUser.Password)
 
 	if ok := hasher.ComparePass(user.Password); !ok {

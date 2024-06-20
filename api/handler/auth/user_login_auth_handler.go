@@ -5,7 +5,6 @@ import (
 	"blogs/internal/common"
 	jwtcus "blogs/internal/helpers/token/jwt"
 	authmodel "blogs/internal/model/auth"
-	usersmodel "blogs/internal/model/users"
 	userstorage "blogs/internal/repository/mysql/user"
 	"net/http"
 	"os"
@@ -33,7 +32,7 @@ func Login(db *gorm.DB) func(*gin.Context) {
 		simpleUser, err := biz.Login(c.Request.Context(), &data)
 
 		if err != nil {
-			c.JSON(http.StatusBadRequest, common.ErrEmailOrPasswordInvalid(usersmodel.EntityName, err))
+			c.JSON(http.StatusBadRequest, err)
 			return
 		}
 
