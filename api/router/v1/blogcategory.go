@@ -18,5 +18,6 @@ func BlogCategoryRouter(blogcategory *gin.RouterGroup, db *gorm.DB) {
 	})
 
 	blogcategory.GET("/:id", blogcategoryhandler.FindBlogCategory(db))
+	blogcategory.POST("/", blogcategoryhandler.CreateBlogCategory(db))
 
 }
