@@ -18,3 +18,11 @@ type BlogCategory struct {
 func (BlogCategory) TableName() string {
 	return "blog_categories"
 }
+
+func (b *BlogCategory) ToBlogCategoryList() *ListBlogCategory {
+	return &ListBlogCategory{
+		Name:           b.Name,
+		Description:    b.Description,
+		ParentCategory: b.ParentCategory,
+	}
+}
