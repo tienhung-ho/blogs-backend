@@ -21,6 +21,7 @@ func (BlogCategory) TableName() string {
 
 func (b *BlogCategory) ToBlogCategoryList() *ListBlogCategory {
 	return &ListBlogCategory{
+		Id:             b.Id,
 		Name:           b.Name,
 		Description:    b.Description,
 		ParentCategory: b.ParentCategory,

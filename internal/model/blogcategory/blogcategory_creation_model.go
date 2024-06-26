@@ -3,7 +3,7 @@ package blogcategorymodel
 import "blogs/internal/common"
 
 type CreationBlogCategory struct {
-	Id             int           `json:"id" gorm:"-"`
+	Id             int           `json:"-" gorm:"id"`
 	Name           string        `json:"name" gorm:"column:name;not null"`
 	Description    string        `json:"description" gorm:"column:description;"`
 	ParentCategory string        `json:"parentcategory" gorm:"column:parentcategory;"`
