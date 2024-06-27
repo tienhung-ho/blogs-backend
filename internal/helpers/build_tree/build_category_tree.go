@@ -28,3 +28,18 @@ func (b *buildCategoryTree) BuildCategoryTree(parent string) []blogcategorymodel
 
 	return result
 }
+
+func (b *buildCategoryTree) FindAllChildrenByName(parent string) []int {
+	var result []int
+	b.findChildren(parent, &result)
+	return result
+}
+
+func (b *buildCategoryTree) findChildren(parent string, result *[]int) {
+	for _, category := range b.data {
+		if category.ParentCategory == parent {
+			*result = append(*result, category.Id)
+			b.findChildren(category.Name, result) // Đệ quy tìm các danh mục con của danh mục hiện tại
+		}
+	}
+}
