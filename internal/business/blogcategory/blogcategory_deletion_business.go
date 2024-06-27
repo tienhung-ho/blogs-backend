@@ -8,6 +8,7 @@ import (
 )
 
 type DeletionBlogCategoryStorage interface {
+	GetBlogCategory(ctx context.Context, cond map[string]interface{}) (*blogcategorymodel.BlogCategory, error)
 	ListItem(ctx context.Context, cond map[string]interface{}) ([]blogcategorymodel.BlogCategory, error)
 	DeleteBlogCategory(ctx context.Context, cond map[string]interface{}) error
 }
@@ -23,6 +24,13 @@ func NewDeletionBlogCategoryBusiness(store DeletionBlogCategoryStorage) *deletio
 }
 
 func (biz *deletionBlogCategoryBusiness) DeleteBlogCategory(ctx context.Context, id int) error {
+
+	record, err := biz.store.GetBlogCategory(ctx, map[string]interface{}{"id": id})
+
+	if err != nil {
+		return common.ErrCannotGetEntity(blogcategorymodel.EntityName, err)
+	}
+
 	records, err := biz.store.ListItem(ctx, map[string]interface{}{"deleted": false})
 
 	if err != nil {
@@ -35,9 +43,7 @@ func (biz *deletionBlogCategoryBusiness) DeleteBlogCategory(ctx context.Context,
 
 	build := buildtree.NewBuildCategoryTree(records)
 
-	categoryTree := build.BuildCategoryTree("")
-
-	result := buildtree.FindAllChildrenByID(categoryTree, id)
+	result := build.FindAllChildrenByName(record.Name)
 
 	for _, categoryId := range result {
 		if err := biz.store.DeleteBlogCategory(ctx, map[string]interface{}{"id": categoryId}); err != nil {
