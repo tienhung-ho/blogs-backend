@@ -37,3 +37,11 @@ func NewReponseErrToken(errToken, tokenType string) *errTokenRespone {
 		Type:  tokenType,
 	}
 }
+
+type dataRes struct {
+	Data interface{} `json:"data"`
+}
+
+func NewDataResponse(data interface{}) *dataRes {
+	return &dataRes{Data: data}
+}
