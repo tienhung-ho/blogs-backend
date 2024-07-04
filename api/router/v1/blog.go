@@ -9,4 +9,5 @@ import (
 
 func BlogRouter(blog *gin.RouterGroup, db *gorm.DB) {
 	blog.GET("/:id", bloghandler.GetBlog(db))
+	blog.POST("/", bloghandler.CreateBlog(db))
 }
