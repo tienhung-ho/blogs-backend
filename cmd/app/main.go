@@ -31,7 +31,6 @@ func main() {
 	fmt.Println("Connect successfully!", db)
 
 	r := router.NewRouter(db)
-
 	r.Run(port) // listen and serve (for windows "localhost:3000")
 
 }

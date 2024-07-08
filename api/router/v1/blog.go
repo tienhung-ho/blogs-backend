@@ -11,4 +11,5 @@ func BlogRouter(blog *gin.RouterGroup, db *gorm.DB) {
 	blog.GET("/:id", bloghandler.GetBlog(db))
 	blog.POST("/", bloghandler.CreateBlog(db))
 	blog.PATCH("/:id", bloghandler.UpdateBlog(db))
+	blog.DELETE("/:id", bloghandler.DeleteBlog(db))
 }
