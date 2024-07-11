@@ -28,6 +28,11 @@ func NewRouter(db *gorm.DB) *gin.Engine {
 		{
 			BlogRouter(blogs, db)
 		}
+
+		roles := v1.Group("/roles")
+		{
+			RoleRouter(roles, db)
+		}
 	}
 
 	return router
