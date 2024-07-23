@@ -11,5 +11,6 @@ func RoleRouter(role *gin.RouterGroup, db *gorm.DB) {
 	role.GET("/:id", rolehandler.FindRole(db))
 	role.GET("/", rolehandler.RoleListItem(db))
 	role.POST("/", rolehandler.CreateRole(db))
+	role.PATCH("/:id", rolehandler.UpdateRole(db))
 	role.DELETE("/:id", rolehandler.DeleteRole(db))
 }
