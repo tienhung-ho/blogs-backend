@@ -18,6 +18,7 @@ func UsersRouter(users *gin.RouterGroup, db *gorm.DB) {
 			"message": "pong",
 		})
 	})
+	users.GET("/list", authmiddleware.AuthMiddleware(authmiddleware.AccessToken), usershandler.ListUser(db))
 	users.GET("/:id", authmiddleware.AuthMiddleware(authmiddleware.AccessToken), usershandler.FindUser(db))
 	users.POST("/", authhandler.CreateUser(db))
 	users.POST("/login", authhandler.Login(db))
