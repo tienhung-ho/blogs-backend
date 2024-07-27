@@ -1,6 +1,7 @@
 package rolebusiness
 
 import (
+	permissionbusiness "blogs/internal/business/permission"
 	"blogs/internal/common"
 	rolemodel "blogs/internal/model/role"
 	"context"
@@ -8,23 +9,24 @@ import (
 )
 
 type RoleCreationStorage interface {
-	FindPermissionsByName(ctx context.Context, names []string) ([]rolemodel.Permission, error)
 	FindRole(ctx context.Context, cond map[string]interface{}) (*rolemodel.Role, error)
 	CreateRoleWithPermissions(ctx context.Context, role *rolemodel.RoleCreation) (int, error)
 }
 
 type roleCreationBusiness struct {
-	store RoleCreationStorage
+	roleStore       RoleCreationStorage
+	permissionStore permissionbusiness.PermissionListItemStorage
 }
 
-func NewRoleCreationBiz(store RoleCreationStorage) *roleCreationBusiness {
+func NewRoleCreationBiz(roleStore RoleCreationStorage, permissionStore permissionbusiness.PermissionListItemStorage) *roleCreationBusiness {
 	return &roleCreationBusiness{
-		store: store,
+		roleStore:       roleStore,
+		permissionStore: permissionStore,
 	}
 }
 
 func (biz *roleCreationBusiness) CreateRole(ctx context.Context, data rolemodel.RoleCreation) (int, error) {
-	record, err := biz.store.FindRole(ctx, map[string]interface{}{"name": data.Name})
+	record, err := biz.roleStore.FindRole(ctx, map[string]interface{}{"name": data.Name})
 
 	if err != nil {
 		return 0, common.ErrCannotGetEntity(rolemodel.RoleEntityName, err)
@@ -41,7 +43,11 @@ func (biz *roleCreationBusiness) CreateRole(ctx context.Context, data rolemodel.
 	}
 
 	// Tìm tất cả các permissions tồn tại trong database
-	permissions, err := biz.store.FindPermissionsByName(ctx, permissionNames)
+	cond := map[string]interface{}{
+		"names": permissionNames,
+	}
+
+	permissions, err := biz.permissionStore.ListPermissionsByName(ctx, cond)
 	if err != nil {
 		return 0, err
 	}
@@ -58,7 +64,7 @@ func (biz *roleCreationBusiness) CreateRole(ctx context.Context, data rolemodel.
 		Permissions: permissions,
 	}
 
-	roleId, err := biz.store.CreateRoleWithPermissions(ctx, &role)
+	roleId, err := biz.roleStore.CreateRoleWithPermissions(ctx, &role)
 	if err != nil {
 		return 0, err
 	}

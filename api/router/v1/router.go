@@ -33,6 +33,11 @@ func NewRouter(db *gorm.DB) *gin.Engine {
 		{
 			RoleRouter(roles, db)
 		}
+
+		permissions := v1.Group("/permissions")
+		{
+			PermissionRouter(permissions, db)
+		}
 	}
 
 	return router

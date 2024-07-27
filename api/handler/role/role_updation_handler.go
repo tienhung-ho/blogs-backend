@@ -4,6 +4,7 @@ import (
 	rolebusiness "blogs/internal/business/role"
 	"blogs/internal/common"
 	rolemodel "blogs/internal/model/role"
+	permissionstorage "blogs/internal/repository/mysql/permission"
 	rolestorage "blogs/internal/repository/mysql/role"
 	"net/http"
 	"strconv"
@@ -29,8 +30,9 @@ func UpdateRole(db *gorm.DB) func(c *gin.Context) {
 			return
 		}
 
-		store := rolestorage.NewMysqlStorage(db)
-		biz := rolebusiness.NewRoleUpdationBiz(store)
+		roleStore := rolestorage.NewMysqlStorage(db)
+		permissionStore := permissionstorage.NewMysqlStorage(db)
+		biz := rolebusiness.NewRoleUpdationBiz(roleStore, permissionStore)
 
 		if err := biz.UpdateRole(c.Request.Context(), map[string]interface{}{"id": id}, data); err != nil {
 			c.JSON(http.StatusBadRequest, err)

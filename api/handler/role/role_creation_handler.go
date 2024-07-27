@@ -4,6 +4,7 @@ import (
 	rolebusiness "blogs/internal/business/role"
 	"blogs/internal/common"
 	rolemodel "blogs/internal/model/role"
+	permissionstorage "blogs/internal/repository/mysql/permission"
 	rolestorage "blogs/internal/repository/mysql/role"
 	"net/http"
 
@@ -21,8 +22,9 @@ func CreateRole(db *gorm.DB) func(c *gin.Context) {
 			return
 		}
 
-		store := rolestorage.NewMysqlStorage(db)
-		biz := rolebusiness.NewRoleCreationBiz(store)
+		roleStore := rolestorage.NewMysqlStorage(db)
+		permissionStore := permissionstorage.NewMysqlStorage(db)
+		biz := rolebusiness.NewRoleCreationBiz(roleStore, permissionStore)
 
 		dataId, err := biz.CreateRole(c.Request.Context(), data)
 

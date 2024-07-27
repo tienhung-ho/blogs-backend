@@ -1,6 +1,7 @@
 package rolebusiness
 
 import (
+	permissionbusiness "blogs/internal/business/permission"
 	"blogs/internal/common"
 	rolemodel "blogs/internal/model/role"
 	"context"
@@ -15,17 +16,19 @@ type RoleUpdationStorage interface {
 }
 
 type roleUpdationBusiness struct {
-	store RoleUpdationStorage
+	roleStore       RoleUpdationStorage
+	permissionStore permissionbusiness.PermissionListItemStorage
 }
 
-func NewRoleUpdationBiz(store RoleUpdationStorage) *roleUpdationBusiness {
+func NewRoleUpdationBiz(roleStore RoleUpdationStorage, permissionStore permissionbusiness.PermissionListItemStorage) *roleUpdationBusiness {
 	return &roleUpdationBusiness{
-		store: store,
+		roleStore:       roleStore,
+		permissionStore: permissionStore,
 	}
 }
 
 func (biz *roleUpdationBusiness) UpdateRole(ctx context.Context, cond map[string]interface{}, data rolemodel.RoleUpdation) error {
-	record, err := biz.store.FindRole(ctx, cond)
+	record, err := biz.roleStore.FindRole(ctx, cond)
 
 	if err != nil {
 		return common.ErrCannotGetEntity(rolemodel.RoleEntityName, err)
@@ -37,7 +40,11 @@ func (biz *roleUpdationBusiness) UpdateRole(ctx context.Context, cond map[string
 		permissionNames[i] = perm.Name
 	}
 
-	permissions, err := biz.store.FindPermissionsByName(ctx, permissionNames)
+	permissionCond := map[string]interface{}{
+		"names": permissionNames,
+	}
+
+	permissions, err := biz.permissionStore.ListPermissionsByName(ctx, permissionCond)
 	if err != nil {
 		return err
 	}
@@ -49,7 +56,7 @@ func (biz *roleUpdationBusiness) UpdateRole(ctx context.Context, cond map[string
 		return common.ErrInternal(errors.New("role data is empty"))
 	}
 
-	if err := biz.store.UpdateRole(ctx, map[string]interface{}{"name": record.Name}, data); err != nil {
+	if err := biz.roleStore.UpdateRole(ctx, map[string]interface{}{"name": record.Name}, data); err != nil {
 		return common.ErrCannotUpdateEntity(rolemodel.RoleEntityName, err)
 	}
 
