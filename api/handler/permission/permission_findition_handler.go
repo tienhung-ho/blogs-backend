@@ -34,7 +34,5 @@ func FindPermissions(db *gorm.DB) func(c *gin.Context) {
 		}
 
 		c.JSON(http.StatusOK, common.NewDataResponse(record))
-
-		return
 	}
 }

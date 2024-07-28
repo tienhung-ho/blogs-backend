@@ -12,6 +12,7 @@ import (
 // RecoverTransaction is a utility function to handle recover in transactions
 func RecoverTransaction(db *gorm.DB) {
 	if r := recover(); r != nil {
+		fmt.Printf("Recovered from panic: %v\n", r)
 		db.Rollback()
 	}
 }
