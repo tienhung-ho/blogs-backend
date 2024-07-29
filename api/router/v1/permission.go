@@ -13,4 +13,5 @@ func PermissionRouter(permissions *gin.RouterGroup, db *gorm.DB) {
 	permissions.GET("/:id", permissionhandler.FindPermissions(db))
 	permissions.POST("/", permissionhandler.CreatePermission(db))
 	permissions.DELETE("/:id", permissionhandler.DeletePermission(db))
+	permissions.PATCH("/:id", permissionhandler.UpdatePermission(db))
 }
