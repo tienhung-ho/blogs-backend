@@ -12,7 +12,7 @@ func (s *mysqlStorage) FindPermissions(ctx context.Context, cond map[string]inte
 
 	db := s.db
 
-	if err := db.WithContext(ctx).Where(cond).First(&permissions).Error; err != nil {
+	if err := db.WithContext(ctx).Where(cond).Preload("Roles").First(&permissions).Error; err != nil {
 		return nil, common.ErrDB(err)
 	}
 
