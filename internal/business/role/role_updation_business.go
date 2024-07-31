@@ -3,6 +3,7 @@ package rolebusiness
 import (
 	permissionbusiness "blogs/internal/business/permission"
 	"blogs/internal/common"
+	filtermodel "blogs/internal/model/filter"
 	rolemodel "blogs/internal/model/role"
 	"context"
 	"errors"
@@ -44,7 +45,7 @@ func (biz *roleUpdationBusiness) UpdateRole(ctx context.Context, cond map[string
 		"names": permissionNames,
 	}
 
-	permissions, err := biz.permissionStore.ListPermissionsByName(ctx, permissionCond)
+	permissions, err := biz.permissionStore.ListPermissions(ctx, permissionCond, &common.Paging{}, &filtermodel.Filter{})
 	if err != nil {
 		return err
 	}

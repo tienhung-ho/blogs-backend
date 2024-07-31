@@ -3,6 +3,7 @@ package rolebusiness
 import (
 	permissionbusiness "blogs/internal/business/permission"
 	"blogs/internal/common"
+	filtermodel "blogs/internal/model/filter"
 	rolemodel "blogs/internal/model/role"
 	"context"
 	"errors"
@@ -47,7 +48,7 @@ func (biz *roleCreationBusiness) CreateRole(ctx context.Context, data rolemodel.
 		"names": permissionNames,
 	}
 
-	permissions, err := biz.permissionStore.ListPermissionsByName(ctx, cond)
+	permissions, err := biz.permissionStore.ListPermissions(ctx, cond, &common.Paging{}, &filtermodel.Filter{})
 	if err != nil {
 		return 0, err
 	}

@@ -2,25 +2,56 @@ package permissionstorage
 
 import (
 	"blogs/internal/common"
+	filtermodel "blogs/internal/model/filter"
 	permissionmodel "blogs/internal/model/permission"
 	"context"
+
+	"gorm.io/gorm"
 )
 
-// FindPermissions finds permissions based on various conditions
-func (s *mysqlStorage) ListPermissionsByName(ctx context.Context, cond map[string]interface{}) ([]permissionmodel.Permission, error) {
+func (s *mysqlStorage) ListPermissions(ctx context.Context, cond map[string]interface{}, paging *common.Paging, filter *filtermodel.Filter, morekeys ...string) ([]permissionmodel.Permission, error) {
 	var permissions []permissionmodel.Permission
 
-	// Sử dụng transaction nếu cần thiết
 	db := s.db.WithContext(ctx)
 
-	// Xây dựng truy vấn động
-	if names, ok := cond["names"]; ok {
-		db = db.Where("name IN ?", names)
+	// Đếm tổng số lượng items
+	if err := s.countPermissions(db, cond, paging); err != nil {
+		return nil, err
 	}
 
-	if err := db.Find(&permissions).Error; err != nil {
+	// Xây dựng truy vấn động
+	query := s.buildQuery(db, cond, filter)
+
+	// Thêm phân trang
+	query = s.addPaging(query, paging)
+
+	// Thực hiện truy vấn
+	if err := query.Find(&permissions).Error; err != nil {
 		return nil, common.ErrDB(err)
 	}
 
 	return permissions, nil
+}
+
+func (s *mysqlStorage) countPermissions(db *gorm.DB, cond map[string]interface{}, paging *common.Paging) error {
+	if err := db.Table(permissionmodel.Permission{}.TableName()).Where(cond).Count(&paging.Total).Error; err != nil {
+		return common.NewErrorResponse(err, "Error count items from database", err.Error(), "CouldNotCount")
+	}
+	return nil
+}
+
+func (s *mysqlStorage) buildQuery(db *gorm.DB, cond map[string]interface{}, filter *filtermodel.Filter) *gorm.DB {
+	if names, ok := cond["names"]; ok {
+		db = db.Where("name IN ?", names)
+	} else {
+		db = db.Where(cond)
+		if filter != nil && filter.Status != "" {
+			db = db.Where("status = ?", filter.Status)
+		}
+	}
+	return db
+}
+
+func (s *mysqlStorage) addPaging(db *gorm.DB, paging *common.Paging) *gorm.DB {
+	return db.Order("id desc").Offset((paging.Page - 1) * paging.Limit).Limit(paging.Limit)
 }
