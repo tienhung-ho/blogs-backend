@@ -9,6 +9,7 @@ import (
 )
 
 func AccountRouter(accounts *gin.RouterGroup, db *gorm.DB) {
+	accounts.GET("/:id", accountshandler.FindAccount(db))
 	accounts.POST("/", accountsmiddlewares.FileUploadMiddileware(), accountshandler.CreateAccount(db))
 
 }
