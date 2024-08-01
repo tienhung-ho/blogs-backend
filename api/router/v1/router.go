@@ -38,6 +38,11 @@ func NewRouter(db *gorm.DB) *gin.Engine {
 		{
 			PermissionRouter(permissions, db)
 		}
+
+		accounts := v1.Group("/accounts")
+		{
+			AccountRouter(accounts, db)
+		}
 	}
 
 	return router
