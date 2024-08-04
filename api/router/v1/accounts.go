@@ -11,5 +11,6 @@ import (
 func AccountRouter(accounts *gin.RouterGroup, db *gorm.DB) {
 	accounts.GET("/:id", accountshandler.FindAccount(db))
 	accounts.POST("/", accountsmiddlewares.FileUploadMiddileware(), accountshandler.CreateAccount(db))
+	accounts.PATCH("/:id", accountsmiddlewares.FileUploadMiddileware(), accountshandler.UpdateAccount(db))
 	accounts.DELETE("/:id", accountshandler.DeleteAccount(db))
 }
