@@ -3,6 +3,7 @@ package accountsbusiness
 import (
 	rolebusiness "blogs/internal/business/role"
 	"blogs/internal/common"
+	"blogs/internal/helpers"
 	accountmodel "blogs/internal/model/accounts"
 	rolemodel "blogs/internal/model/role"
 	"context"
@@ -10,7 +11,7 @@ import (
 )
 
 type AccountCreationStorage interface {
-	CreateAccount(ctx context.Context, data *accountmodel.Account) error
+	CreateAccount(ctx context.Context, data *accountmodel.AccountCreation) error
 }
 
 type accountCreationBusiness struct {
@@ -25,7 +26,7 @@ func NewAccountCreationBiz(accountCreationStore AccountCreationStorage, roleFind
 	}
 }
 
-func (biz *accountCreationBusiness) CreateAccount(ctx context.Context, data *accountmodel.Account) error {
+func (biz *accountCreationBusiness) CreateAccount(ctx context.Context, data *accountmodel.AccountCreation) error {
 
 	role, err := biz.roleFinditionStore.FindRole(ctx, map[string]interface{}{
 		"deleted": false,
@@ -38,6 +39,16 @@ func (biz *accountCreationBusiness) CreateAccount(ctx context.Context, data *acc
 
 	if reflect.DeepEqual(role, rolemodel.Role{}) {
 		return common.ErrNotFoundEntity(rolemodel.RoleEntityName, err)
+	}
+
+	hasher := helpers.NewHashBcrypt(data.Password)
+
+	hashedPassword, err := hasher.GeneratePass()
+
+	data.Password = hashedPassword
+
+	if err != nil {
+		return err
 	}
 
 	if err := biz.accountCreationStore.CreateAccount(ctx, data); err != nil {

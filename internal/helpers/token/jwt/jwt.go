@@ -2,6 +2,7 @@ package jwtcus
 
 import (
 	tokenhelper "blogs/internal/helpers/token"
+	accountmodel "blogs/internal/model/accounts"
 	usersmodel "blogs/internal/model/users"
 	"errors"
 	"fmt"
@@ -32,8 +33,25 @@ func (js *JwtServices) GenerateToken(user usersmodel.Users, duration time.Durati
 
 	claims := &authJwtCusClaims{
 		Payload: tokenhelper.JwtPayload{
-			UserId: user.ID,
-			Role:   "user",
+			Id:   user.ID,
+			Role: "user",
+		},
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(duration)),
+			Issuer:    js.Issuer,
+		},
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	return token.SignedString([]byte(js.SecretKey))
+}
+
+func (js *JwtServices) GenerateTokenOfAccount(acc accountmodel.Account, duration time.Duration, role string) (string, error) {
+
+	claims := &authJwtCusClaims{
+		Payload: tokenhelper.JwtPayload{
+			Id:   acc.ID,
+			Role: role,
 		},
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(duration)),

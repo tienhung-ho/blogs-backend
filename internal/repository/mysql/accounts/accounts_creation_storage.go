@@ -6,7 +6,7 @@ import (
 	"context"
 )
 
-func (s *mysqlStorage) CreateAccount(ctx context.Context, data *accountmodel.Account) error {
+func (s *mysqlStorage) CreateAccount(ctx context.Context, data *accountmodel.AccountCreation) error {
 
 	db := s.db.Begin()
 

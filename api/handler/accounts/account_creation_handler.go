@@ -27,7 +27,7 @@ func CreateAccount(db *gorm.DB) func(c *gin.Context) {
 			return
 		}
 
-		var data accountmodel.Account
+		var data accountmodel.AccountCreation
 
 		if err := c.ShouldBind(&data); err != nil {
 			c.JSON(http.StatusBadRequest, common.ErrInternal(err))

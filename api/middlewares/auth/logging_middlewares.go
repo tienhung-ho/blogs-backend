@@ -46,7 +46,7 @@ func AuthMiddleware(tokenType string) gin.HandlerFunc {
 		}
 
 		// Token is valid, store the claims in the context
-		c.Set("userID", claims.UserId)
+		c.Set("userID", claims.Id)
 		c.Next()
 	}
 }
