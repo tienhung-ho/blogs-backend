@@ -11,9 +11,9 @@ import (
 )
 
 func AccountRouter(accounts *gin.RouterGroup, db *gorm.DB) {
-	accounts.GET("/:id", accountauthmiddlewares.AuthMiddleware(accountauthmiddlewares.AccessToken), accountshandler.FindAccount(db))
+	accounts.GET("/:id", accountauthmiddlewares.AuthMiddleware(accountauthmiddlewares.AccessToken, db), accountshandler.FindAccount(db))
 	accounts.POST("/login", accountauthhandler.Login(db))
-	accounts.POST("/", accountauthmiddlewares.AuthMiddleware(accountauthmiddlewares.AccessToken), accountsmiddlewares.FileUploadMiddileware(), accountshandler.CreateAccount(db))
-	accounts.PATCH("/:id", accountauthmiddlewares.AuthMiddleware(accountauthmiddlewares.AccessToken), accountsmiddlewares.FileUploadMiddileware(), accountshandler.UpdateAccount(db))
-	accounts.DELETE("/:id", accountauthmiddlewares.AuthMiddleware(accountauthmiddlewares.AccessToken),accountshandler.DeleteAccount(db))
+	accounts.POST("/", accountauthmiddlewares.AuthMiddleware(accountauthmiddlewares.AccessToken, db), accountsmiddlewares.FileUploadMiddileware(), accountshandler.CreateAccount(db))
+	accounts.PATCH("/:id", accountauthmiddlewares.AuthMiddleware(accountauthmiddlewares.AccessToken, db), accountsmiddlewares.FileUploadMiddileware(), accountshandler.UpdateAccount(db))
+	accounts.DELETE("/:id", accountauthmiddlewares.AuthMiddleware(accountauthmiddlewares.AccessToken, db), accountshandler.DeleteAccount(db))
 }

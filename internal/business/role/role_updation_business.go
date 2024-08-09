@@ -45,7 +45,11 @@ func (biz *roleUpdationBusiness) UpdateRole(ctx context.Context, cond map[string
 		"names": permissionNames,
 	}
 
-	permissions, err := biz.permissionStore.ListPermissions(ctx, permissionCond, &common.Paging{}, &filtermodel.Filter{})
+	var paging common.Paging
+
+	paging.Process()
+
+	permissions, err := biz.permissionStore.ListPermissions(ctx, permissionCond, &paging, &filtermodel.Filter{})
 	if err != nil {
 		return err
 	}

@@ -4,6 +4,7 @@ import (
 	permissionbusiness "blogs/internal/business/permission"
 	"blogs/internal/common"
 	filtermodel "blogs/internal/model/filter"
+	policiescasbin "blogs/internal/policies"
 	permissionstorage "blogs/internal/repository/mysql/permission"
 	"net/http"
 
@@ -54,6 +55,8 @@ func ListPermissions(db *gorm.DB) func(c *gin.Context) {
 			return
 		}
 
+		paging.Process()
+
 		var filter filtermodel.Filter
 
 		if err := c.ShouldBind(&filter); err != nil {
@@ -64,6 +67,8 @@ func ListPermissions(db *gorm.DB) func(c *gin.Context) {
 		store := permissionstorage.NewMysqlStorage(db)
 		biz := permissionbusiness.NewPermissionListItem(store)
 		permissions, err := biz.ListPermissions(c.Request.Context(), map[string]interface{}{"deleted": false}, &paging, &filter)
+
+		policiescasbin.SyncPermissions(permissions, "v1")
 
 		if err != nil {
 			c.JSON(http.StatusBadRequest, err)

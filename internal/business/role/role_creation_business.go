@@ -48,7 +48,11 @@ func (biz *roleCreationBusiness) CreateRole(ctx context.Context, data rolemodel.
 		"names": permissionNames,
 	}
 
-	permissions, err := biz.permissionStore.ListPermissions(ctx, cond, &common.Paging{}, &filtermodel.Filter{})
+	var paging common.Paging
+
+	paging.Process()
+
+	permissions, err := biz.permissionStore.ListPermissions(ctx, cond, &paging, &filtermodel.Filter{})
 	if err != nil {
 		return 0, err
 	}

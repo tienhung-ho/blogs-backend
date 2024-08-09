@@ -11,7 +11,7 @@ type Gender string
 
 const (
 	GenderMale   Gender = "Male"
-	GenderFemale Gender = "female"
+	GenderFemale Gender = "Female"
 	GenderOther  Gender = "Other"
 )
 

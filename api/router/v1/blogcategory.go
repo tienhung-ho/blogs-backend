@@ -2,7 +2,8 @@ package router
 
 import (
 	blogcategoryhandler "blogs/api/handler/blogcategory"
-	"net/http"
+	accountauthmiddlewares "blogs/api/middlewares/auth/account"
+	policiesmiddleware "blogs/api/middlewares/policies"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -10,12 +11,7 @@ import (
 
 func BlogCategoryRouter(blogcategory *gin.RouterGroup, db *gorm.DB) {
 
-	// Đăng ký các định tuyến và xử lý
-	blogcategory.GET("/", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "pong",
-		})
-	})
+	blogcategory.Use(accountauthmiddlewares.AuthMiddleware(accountauthmiddlewares.AccessToken, db), policiesmiddleware.Middleware())
 
 	blogcategory.GET("/:id", blogcategoryhandler.FindBlogCategory(db))
 	blogcategory.POST("/", blogcategoryhandler.CreateBlogCategory(db))

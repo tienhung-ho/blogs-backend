@@ -12,6 +12,6 @@ func (p *Paging) Process() {
 	}
 
 	if p.Limit <= 0 {
-		p.Limit = 5
+		p.Limit = 9999
 	}
 }

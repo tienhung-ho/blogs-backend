@@ -8,6 +8,7 @@ import (
 )
 
 func NewRouter(db *gorm.DB) *gin.Engine {
+
 	router := gin.Default()
 
 	// Đăng ký các định tuyến và xử lý
@@ -19,7 +20,7 @@ func NewRouter(db *gorm.DB) *gin.Engine {
 		{
 			UsersRouter(users, db)
 		}
-		blogcategory := v1.Group("/blog-category")
+		blogcategory := v1.Group("/blog-categories")
 		{
 			BlogCategoryRouter(blogcategory, db)
 		}
