@@ -15,17 +15,17 @@ import (
 func CreateAccount(db *gorm.DB) func(c *gin.Context) {
 	return func(c *gin.Context) {
 
-		fileURLInterface, ok := c.Get("fileURL")
-		if !ok {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "fileURL not found in context"})
-			return
-		}
-
-		fileURL, ok := fileURLInterface.(string)
-		if !ok {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to convert fileURL to string"})
-			return
-		}
+		//fileURLInterface, ok := c.Get("fileURL")
+		//if !ok {
+		//	c.JSON(http.StatusUnauthorized, gin.H{"error": "fileURL not found in context"})
+		//	return
+		//}
+		//
+		//fileURL, ok := fileURLInterface.(string)
+		//if !ok {
+		//	c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to convert fileURL to string"})
+		//	return
+		//}
 
 		var data accountmodel.AccountCreation
 
@@ -34,7 +34,7 @@ func CreateAccount(db *gorm.DB) func(c *gin.Context) {
 			return
 		}
 
-		data.Image = fileURL
+		data.Image = "nil"
 
 		accountStore := accountsstogare.NewMysqlStorage(db)
 		roleStore := rolestorage.NewMysqlStorage(db)

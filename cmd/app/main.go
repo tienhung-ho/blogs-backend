@@ -3,17 +3,39 @@ package main
 import (
 	"blogs/api/router/v1"
 	policiescasbin "blogs/internal/policies"
+	"context"
 	"fmt"
+	"github.com/joho/godotenv"
+	"github.com/redis/go-redis/v9"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 	"log"
 	"os"
 	"path/filepath"
-
-	"github.com/joho/godotenv"
-	"gorm.io/driver/mysql"
-	"gorm.io/gorm"
 )
 
+func redisConnection() *redis.Client {
+	url := os.Getenv("REDIS_URL")
+	if url == "" {
+		url = "redis://localhost:6379"
+	}
+	opts, err := redis.ParseURL(url)
+	if err != nil {
+		log.Fatalf("Error parsing Redis URL: %v", err)
+	}
+
+	client := redis.NewClient(opts)
+	_, err = client.Ping(context.Background()).Result()
+	if err != nil {
+		log.Fatalf("Error connecting to Redis: %v", err)
+	}
+
+	fmt.Println("Connected successfully to Redis!")
+	return client
+}
+
 func main() {
+
 	if err := godotenv.Load(); err != nil {
 		log.Fatal("Error loading .env file")
 	}
@@ -23,6 +45,8 @@ func main() {
 	if dsn == "" {
 		log.Fatal("Environment variable DB_URL is not set")
 	}
+
+	rdb := redisConnection()
 
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
@@ -41,19 +65,11 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	// e := policiescasbin.InitEnforcer(modelPath, policyPath)
 
-	// go func() {
-	// 	ticker := time.NewTicker(10 * time.Second) // Định kỳ mỗi 5 phút
-	// 	defer ticker.Stop()
-	// 	for {
-	// 		<-ticker.C
-	// 		policiescasbin.SyncPermissions(enforcer, db, "v1")
-	// 	}
-	// }()
-	// policiescasbin.SyncPermissions(enforcer, db, "v1")
-	fmt.Println("Connect successfully!", db)
+	fmt.Println("Connect successfully to mysql!", db)
 
-	r := router.NewRouter(db)
-	r.Run(port) // listen and serve (for windows "localhost:3000")
+	r := router.NewRouter(db, rdb)
+	if err := r.Run(port); err != nil {
+		return
+	} // listen and serve (for windows "localhost:3000")
 }

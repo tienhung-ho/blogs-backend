@@ -2,12 +2,13 @@ package router
 
 import (
 	"blogs/internal/common"
+	"github.com/redis/go-redis/v9"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
-func NewRouter(db *gorm.DB) *gin.Engine {
+func NewRouter(db *gorm.DB, rdb *redis.Client) *gin.Engine {
 
 	router := gin.Default()
 
@@ -27,7 +28,7 @@ func NewRouter(db *gorm.DB) *gin.Engine {
 
 		blogs := v1.Group("/blogs")
 		{
-			BlogRouter(blogs, db)
+			BlogRouter(blogs, db, rdb)
 		}
 
 		roles := v1.Group("/roles")

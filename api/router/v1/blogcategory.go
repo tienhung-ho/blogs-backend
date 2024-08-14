@@ -4,7 +4,6 @@ import (
 	blogcategoryhandler "blogs/api/handler/blogcategory"
 	accountauthmiddlewares "blogs/api/middlewares/auth/account"
 	policiesmiddleware "blogs/api/middlewares/policies"
-
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )

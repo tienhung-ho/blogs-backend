@@ -4,6 +4,8 @@ import (
 	blogbusiness "blogs/internal/business/blog"
 	"blogs/internal/common"
 	blogstorage "blogs/internal/repository/mysql/blog"
+	blogcachestorage "blogs/internal/repository/redis/blog"
+	"github.com/redis/go-redis/v9"
 	"net/http"
 	"strconv"
 
@@ -11,7 +13,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func DeleteBlog(db *gorm.DB) func(c *gin.Context) {
+func DeleteBlog(db *gorm.DB, rdb *redis.Client) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		id, err := strconv.Atoi(c.Param("id"))
 
@@ -21,7 +23,8 @@ func DeleteBlog(db *gorm.DB) func(c *gin.Context) {
 		}
 
 		store := blogstorage.NewMysqlStorage(db)
-		biz := blogbusiness.NewBlogDeletionBiz(store)
+		rdbStore := blogcachestorage.NewRedisStorage(rdb)
+		biz := blogbusiness.NewBlogDeletionBiz(store, rdbStore)
 
 		if err := biz.DeleteBlog(c.Request.Context(), id); err != nil {
 			c.JSON(http.StatusBadRequest, err)

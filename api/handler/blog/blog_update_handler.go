@@ -5,14 +5,15 @@ import (
 	"blogs/internal/common"
 	blogmodel "blogs/internal/model/blog"
 	blogstorage "blogs/internal/repository/mysql/blog"
+	blogcachestorage "blogs/internal/repository/redis/blog"
+	"github.com/gin-gonic/gin"
+	"github.com/redis/go-redis/v9"
+	"gorm.io/gorm"
 	"net/http"
 	"strconv"
-
-	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 )
 
-func UpdateBlog(db *gorm.DB) func(c *gin.Context) {
+func UpdateBlog(db *gorm.DB, rdb *redis.Client) func(c *gin.Context) {
 	return func(c *gin.Context) {
 
 		var data blogmodel.BlogUpdate
@@ -30,7 +31,8 @@ func UpdateBlog(db *gorm.DB) func(c *gin.Context) {
 		}
 
 		store := blogstorage.NewMysqlStorage(db)
-		biz := blogbusiness.NewUpdateBlogBiz(store)
+		rdbStore := blogcachestorage.NewRedisStorage(rdb)
+		biz := blogbusiness.NewUpdateBlogBiz(store, rdbStore)
 
 		if err := biz.UpdateBlog(c.Request.Context(), map[string]interface{}{"id": id}, &data); err != nil {
 			c.JSON(http.StatusBadRequest, err)

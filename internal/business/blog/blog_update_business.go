@@ -11,13 +11,19 @@ type UpdateBlogStorage interface {
 	UpdateBlog(ctx context.Context, cond map[string]interface{}, data *blogmodel.BlogUpdate) error
 }
 
-type updateBlogBusiness struct {
-	store UpdateBlogStorage
+type UpdateBlogCacheStorage interface {
+	DeleteBlog(ctx context.Context, cond map[string]interface{}) error
 }
 
-func NewUpdateBlogBiz(store UpdateBlogStorage) *updateBlogBusiness {
+type updateBlogBusiness struct {
+	store    UpdateBlogStorage
+	rdbStore UpdateBlogCacheStorage
+}
+
+func NewUpdateBlogBiz(store UpdateBlogStorage, rdbStore UpdateBlogCacheStorage) *updateBlogBusiness {
 	return &updateBlogBusiness{
-		store: store,
+		store:    store,
+		rdbStore: rdbStore,
 	}
 }
 
@@ -34,6 +40,11 @@ func (biz *updateBlogBusiness) UpdateBlog(ctx context.Context, cond map[string]i
 
 	if err := biz.store.UpdateBlog(ctx, cond, data); err != nil {
 		return common.ErrCannotUpdateEntity(blogmodel.EntityName, err)
+	}
+
+	if err := biz.rdbStore.DeleteBlog(ctx, cond); err != nil {
+
+		return common.ErrCannotDeleteEntity(blogmodel.EntityName, err)
 	}
 
 	return nil

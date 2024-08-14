@@ -20,3 +20,15 @@ type Blog struct {
 func (Blog) TableName() string {
 	return "blogs"
 }
+
+func ToBlogCreation(b *Blog) *BlogCreation {
+	return &BlogCreation{
+		Id:          b.Id,
+		Title:       b.Title,
+		Description: b.Description,
+		Content:     b.Content,
+		AuthorID:    b.AuthorID,
+		Category:    b.Category,
+		Status:      b.Status,
+	}
+}
