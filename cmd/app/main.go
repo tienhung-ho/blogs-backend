@@ -12,6 +12,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"time"
 )
 
 func redisConnection() *redis.Client {
@@ -34,23 +35,46 @@ func redisConnection() *redis.Client {
 	return client
 }
 
-func main() {
-
+func NewDB() (*gorm.DB, error) {
 	if err := godotenv.Load(); err != nil {
 		log.Fatal("Error loading .env file")
 	}
 	dsn := os.Getenv("DB_URL")
-	port := os.Getenv("PORT")
 
 	if dsn == "" {
 		log.Fatal("Environment variable DB_URL is not set")
 	}
 
-	rdb := redisConnection()
-
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic("failed to connect database")
+	}
+
+	sqlDB, err := db.DB()
+	if err != nil {
+		return nil, err
+	}
+
+	// Cấu hình connection pool chung
+	sqlDB.SetMaxOpenConns(100)
+	sqlDB.SetMaxIdleConns(10)
+	sqlDB.SetConnMaxLifetime(40 * time.Minute)
+
+	return db, nil
+}
+
+func main() {
+
+	if err := godotenv.Load(); err != nil {
+		log.Fatal("Error loading .env file")
+	}
+	port := os.Getenv("PORT")
+
+	rdb := redisConnection()
+
+	db, err := NewDB()
+	if err != nil {
+		log.Fatalf("Failed to connect database: %v", err)
 	}
 
 	cwd, err := os.Getwd()

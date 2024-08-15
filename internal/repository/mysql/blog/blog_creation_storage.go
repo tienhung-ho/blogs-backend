@@ -6,7 +6,7 @@ import (
 	"context"
 )
 
-func (s *mysqlStorage) CreateBlog(ctx context.Context, data *blogmodel.BlogCreation) (int, error) {
+func (s *mysqlStorage) CreateBlog(ctx context.Context, data *blogmodel.BlogCreation, morekeys ...string) (int, error) {
 
 	db := s.db.Begin()
 

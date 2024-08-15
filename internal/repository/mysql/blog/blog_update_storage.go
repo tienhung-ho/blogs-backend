@@ -6,7 +6,7 @@ import (
 	"context"
 )
 
-func (s *mysqlStorage) UpdateBlog(ctx context.Context, cond map[string]interface{}, data *blogmodel.BlogUpdate) error {
+func (s *mysqlStorage) UpdateBlog(ctx context.Context, cond map[string]interface{}, data *blogmodel.BlogUpdate, morekeys ...string) error {
 
 	db := s.db.Begin()
 

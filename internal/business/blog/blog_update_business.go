@@ -7,12 +7,12 @@ import (
 )
 
 type UpdateBlogStorage interface {
-	GetBlog(ctx context.Context, cond map[string]interface{}) (*blogmodel.Blog, error)
-	UpdateBlog(ctx context.Context, cond map[string]interface{}, data *blogmodel.BlogUpdate) error
+	GetBlog(ctx context.Context, cond map[string]interface{}, morekeys ...string) (*blogmodel.Blog, error)
+	UpdateBlog(ctx context.Context, cond map[string]interface{}, data *blogmodel.BlogUpdate, morekeys ...string) error
 }
 
 type UpdateBlogCacheStorage interface {
-	DeleteBlog(ctx context.Context, cond map[string]interface{}) error
+	DeleteBlog(ctx context.Context, cond map[string]interface{}, morekeys ...string) error
 }
 
 type updateBlogBusiness struct {

@@ -8,12 +8,12 @@ import (
 )
 
 type BlogDeletionStorage interface {
-	GetBlog(ctx context.Context, cond map[string]interface{}) (*blogmodel.Blog, error)
-	DeleteBlog(ctx context.Context, cond map[string]interface{}) error
+	GetBlog(ctx context.Context, cond map[string]interface{}, morekeys ...string) (*blogmodel.Blog, error)
+	DeleteBlog(ctx context.Context, cond map[string]interface{}, morekeys ...string) error
 }
 
 type DeleteBlogCacheStorage interface {
-	DeleteBlog(ctx context.Context, cond map[string]interface{}) error
+	DeleteBlog(ctx context.Context, cond map[string]interface{}, morekeys ...string) error
 }
 
 type blogDeletionBusiness struct {

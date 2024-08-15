@@ -10,7 +10,7 @@ import (
 
 func BlogRouter(blog *gin.RouterGroup, db *gorm.DB, rdb *redis.Client) {
 	blog.GET("/:id", bloghandler.GetBlog(db, rdb))
-	blog.GET("/", bloghandler.ListBlog(db))
+	blog.GET("/", bloghandler.ListBlog(db, rdb))
 	blog.POST("/", bloghandler.CreateBlog(db))
 	blog.PATCH("/:id", bloghandler.UpdateBlog(db, rdb))
 	blog.DELETE("/:id", bloghandler.DeleteBlog(db, rdb))

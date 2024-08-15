@@ -8,7 +8,7 @@ import (
 )
 
 type BlogCreationStorage interface {
-	CreateBlog(ctx context.Context, data *blogmodel.BlogCreation) (int, error)
+	CreateBlog(ctx context.Context, data *blogmodel.BlogCreation, morekeys ...string) (int, error)
 }
 
 type blogCreationBusiness struct {

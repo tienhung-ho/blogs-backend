@@ -7,11 +7,11 @@ const (
 )
 
 type BlogCategory struct {
-	Id             int           `json:"-" gorm:"column:id;"`
-	Name           string        `json:"name" gorm:"column:name;not null"`
-	Description    string        `json:"description" gorm:"column:description;"`
-	ParentCategory string        `json:"parentcategory" gorm:"column:parentcategory;"`
-	Status         common.Status `json:"status" gorm:"column:status;default:'Pending'"`
+	Id             int           `json:"-" gorm:"column:id;primaryKey;autoIncrement"`
+	Name           string        `json:"name" gorm:"column:name;not null;index:idx_blog_categories_name"`
+	Description    string        `json:"description" gorm:"column:description"`
+	ParentCategory string        `json:"parentcategory" gorm:"column:parentcategory;index:idx_blog_categories_parentcategory"`
+	Status         common.Status `json:"status" gorm:"column:status;type:enum('Pending','Active','Inactive');default:'Pending';index:idx_blog_categories_status"`
 	Deleted        bool          `json:"deleted" gorm:"column:deleted;default:false"`
 }
 

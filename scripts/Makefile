@@ -5,7 +5,7 @@ include ../.env
 # Các lệnh khác ở dưới
 
 # Phony targets
-.PHONY: mysql createdb dropdb createmigrate migrateup migratedown
+.PHONY: mysql createdb dropdb createmigrate migrateup migratedown checkmigrate forcedowngrade
 
 # Docker commands to manage MySQL container
 mysql:
@@ -16,6 +16,10 @@ createdb:
 
 dropdb:
 	docker exec -it mysqlres mysql -u root -p$(MYSQL_ROOT_PASSWORD) -e "DROP DATABASE IF EXISTS $(DATABASE_NAME);"
+
+checkmigrate:
+	migrate -path ../migrations/mysql -database "$(SQL_URL)" version
+
 
 # Migrate commands
 createmigrate:
@@ -29,3 +33,8 @@ migrateup:
 migratedown:
 	@echo "Migrating down with database URL: $(SQL_URL)"
 	migrate -path ../migrations/mysql -database "$(SQL_URL)" -verbose down
+
+
+forcedowngrade:
+	@echo "Forcing downgrade to fix dirty state"
+	migrate -path ../migrations/mysql -database "$(SQL_URL)" force 0

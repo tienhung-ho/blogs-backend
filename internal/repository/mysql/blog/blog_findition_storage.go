@@ -8,7 +8,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func (s *mysqlStorage) GetBlog(ctx context.Context, cond map[string]interface{}) (*blogmodel.Blog, error) {
+func (s *mysqlStorage) GetBlog(ctx context.Context, cond map[string]interface{}, morekeys ...string) (*blogmodel.Blog, error) {
 
 	db := s.db.Begin()
 

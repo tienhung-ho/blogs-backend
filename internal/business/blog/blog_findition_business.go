@@ -2,23 +2,30 @@ package blogbusiness
 
 import (
 	"blogs/internal/common"
+	cachehelper "blogs/internal/helpers/cache"
 	blogmodel "blogs/internal/model/blog"
+	filtermodel "blogs/internal/model/filter"
 	"context"
 	"log"
 )
 
 // BlogStorage interface at storage of blog
 type BlogStorage interface {
-	GetBlog(ctx context.Context, cond map[string]interface{}) (*blogmodel.Blog, error)
-	CreateBlog(ctx context.Context, data *blogmodel.BlogCreation) (int, error)
+	GetBlog(ctx context.Context, cond map[string]interface{}, morekeys ...string) (*blogmodel.Blog, error)
+	CreateBlog(ctx context.Context, data *blogmodel.BlogCreation, morekeys ...string) (int, error)
+}
+
+type BlogCacheStorage interface {
+	GetBlog(ctx context.Context, cond map[string]interface{}, morekeys ...string) (*blogmodel.Blog, error)
+	CreateBlog(ctx context.Context, data interface{}, morekeys ...string) (int, error)
 }
 
 type blogBusiness struct {
 	store    BlogStorage
-	rdbStore BlogStorage
+	rdbStore BlogCacheStorage
 }
 
-func NewBlogBiz(store BlogStorage, rdb BlogStorage) *blogBusiness {
+func NewBlogBiz(store BlogStorage, rdb BlogCacheStorage) *blogBusiness {
 	return &blogBusiness{
 		store:    store,
 		rdbStore: rdb,
@@ -46,8 +53,12 @@ func (biz *blogBusiness) GetBlog(ctx context.Context, id int) (*blogmodel.Blog, 
 
 	//Save the blog to cache for future requests
 	if blog != nil {
+		var paging common.Paging
+
+		paging.Process()
+		key := cachehelper.GenerateCacheKey(blogmodel.EntityName, map[string]interface{}{"id": id}, paging, filtermodel.Filter{})
 		blogCreation := blogmodel.ToBlogCreation(blog)
-		_, err = biz.rdbStore.CreateBlog(ctx, blogCreation)
+		_, err = biz.rdbStore.CreateBlog(ctx, blogCreation, key)
 		if err != nil {
 			return nil, err
 		}

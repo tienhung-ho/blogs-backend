@@ -5,20 +5,37 @@ import (
 	blogmodel "blogs/internal/model/blog"
 	"context"
 	"encoding/json"
-	"fmt"
+	"errors"
 	"time"
 )
 
-func (rdb *redisStorage) CreateBlog(ctx context.Context, blog *blogmodel.BlogCreation) (int, error) {
-
-	key := blogmodel.EntityName + fmt.Sprintf("%d", blog.Id)
-	record, err := json.Marshal(blog)
-
-	if err != nil {
-		return 0, common.ErrDB(err)
+// CreateBlog lưu trữ blog vào Redis
+func (rdb *redisStorage) CreateBlog(ctx context.Context, data interface{}, morekeys ...string) (int, error) {
+	if len(morekeys) == 0 {
+		return 0, errors.New("missing cache key")
 	}
 
-	if err := rdb.rdb.Set(ctx, key, string(record), 10*time.Minute).Err(); err != nil {
+	key := morekeys[0]
+
+	var record []byte
+	var err error
+
+	switch v := data.(type) {
+	case *blogmodel.BlogCreation:
+		record, err = json.Marshal(v)
+		if err != nil {
+			return 0, common.ErrDB(err)
+		}
+	case []blogmodel.Blog:
+		record, err = json.Marshal(v)
+		if err != nil {
+			return 0, common.ErrDB(err)
+		}
+	default:
+		return 0, errors.New("unsupported data type")
+	}
+
+	if err := rdb.rdb.Set(ctx, key, string(record), 20*time.Second).Err(); err != nil {
 		return 0, common.ErrDB(err)
 	}
 
